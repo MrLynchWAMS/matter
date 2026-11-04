@@ -3,459 +3,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classifying Matter Notes Portal - 8th Grade Science</title>
-    <!-- Tailwind CSS -->
+    <title>Mixture Explorer: Macro to Micro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        /* Custom scrollbars */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* Custom slider styling for a better look */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
             height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
+            cursor: pointer;
             background: #334155;
             border-radius: 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        
-        .pulse-subtle {
-            animation: pulse-border 2.5s infinite;
-        }
-        @keyframes pulse-border {
-            0%, 100% { border-color: rgba(59, 130, 246, 0.4); }
-            50% { border-color: rgba(59, 130, 246, 0.9); }
-        }
-
-        .glow-emerald {
-            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.3);
-        }
-
-        .glow-amber {
-            box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.25);
-        }
-
-        @keyframes bounce-x {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(6px); }
-        }
-        .animate-bounce-x {
-            animation: bounce-x 1.2s infinite;
+        input[type=range]:focus {
+            outline: none;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-100 min-h-screen overflow-hidden font-sans selection:bg-blue-500 selection:text-white relative select-none">
 
-    <!-- Top Navigation Header -->
-    <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center">
-                <i class="fa-solid fa-atom text-xl"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="bg-blue-500/10 text-blue-400 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-blue-500/20">8th Grade Physical Science</span>
-                    <span id="os-badge" class="bg-slate-800 text-slate-300 text-xs font-mono px-2.5 py-0.5 rounded-full border border-slate-700">Detecting Device...</span>
-                </div>
-                <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight">Classifying Matter Notes Portal</h1>
-            </div>
-        </div>
+    <!-- Fullscreen Canvas -->
+    <canvas id="simCanvas" class="absolute top-0 left-0 w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
 
-        <div class="flex items-center gap-2 sm:gap-3">
-            <a href="https://dynalist.io" target="_blank" rel="noopener" class="text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2">
-                <span>Open Blank Dynalist Journal</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
-            </a>
-        </div>
-    </header>
-
-    <!-- Main Split View Layout -->
-    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 p-4 sm:p-6 max-w-[1920px] w-full mx-auto">
+    <!-- Floating UI Panel -->
+    <main class="absolute top-4 left-4 w-80 sm:w-96 bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-slate-700/50 flex flex-col gap-6 pointer-events-auto">
         
-        <!-- LEFT PANEL: Two Copy Methods & Sandbox (5 Cols) -->
-        <section class="lg:col-span-5 flex flex-col gap-5">
+        <header>
+            <h1 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400 mb-1">
+                Mixture Explorer
+            </h1>
+            <p class="text-slate-300 text-sm leading-snug">
+                Zoom to see how atoms behave at the macro vs micro scale.
+            </p>
+        </header>
+
+        <!-- Controls -->
+        <div class="flex flex-col gap-4">
             
-            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-base font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-route text-blue-400"></i>
-                        <span>Choose Your Copy Method</span>
-                    </h2>
-                    <span class="text-xs text-slate-400">Select Method Below</span>
-                </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Transfer these unit notes into your personal Dynalist Science Journal using either method below.
-                </p>
-            </div>
-
-            <!-- METHOD 1: RECOMMENDED / NATIVE COLORS -->
-            <div class="bg-slate-900 border-2 border-emerald-500/40 rounded-2xl p-5 shadow-xl glow-emerald relative overflow-hidden transition-all">
-                <div class="flex items-start justify-between gap-2 mb-3">
-                    <div class="flex items-center gap-2">
-                        <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-2.5 py-1 rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
-                            <i class="fa-solid fa-star text-amber-300"></i>
-                            <span>METHOD 1 (BEST WAY)</span>
-                        </span>
-                    </div>
-                    <span class="text-[11px] font-semibold bg-emerald-950 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-600/40">Native Colors</span>
-                </div>
-
-                <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                    <span>Copy Directly from Document Preview</span>
-                </h3>
-
-                <!-- Feature Badge -->
-                <div class="mb-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2.5 text-xs text-emerald-200 flex items-start gap-2">
-                    <i class="fa-solid fa-shield-halved text-emerald-400 text-sm mt-0.5"></i>
-                    <span><strong>Preserves:</strong> Native Red, Green, Yellow highlight bars and collapsible outline structure!</span>
-                </div>
-
-                <!-- Step-by-Step for Method 1 -->
-                <div class="space-y-2.5 text-xs">
-                    <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                        <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
-                        <div class="text-slate-300">
-                            Click <strong class="text-emerald-300">inside the preview window on the right 👉</strong>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                        <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
-                        <div class="text-slate-300">
-                            Press <kbd class="cmd-key bg-slate-800 px-1.5 py-0.5 rounded text-amber-300 font-mono text-[11px] border border-slate-700">Ctrl + A</kbd> <strong class="text-white">TWICE</strong> to select all bullets.
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                        <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
-                        <div class="text-slate-300">
-                            Press <kbd class="copy-key bg-slate-800 px-1.5 py-0.5 rounded text-amber-300 font-mono text-[11px] border border-slate-700">Ctrl + C</kbd> to copy.
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                        <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
-                        <div class="text-slate-300">
-                            Open your Science Journal and press <kbd class="paste-key bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300 font-mono text-[11px] border border-slate-700">Ctrl + V</kbd> to paste.
-                        </div>
-                    </div>
+            <!-- Type Toggle -->
+            <div>
+                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Matter Type</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="btn-element" class="py-1.5 px-3 rounded-md text-sm font-bold transition-all duration-200 bg-cyan-600/90 text-white shadow">Element</button>
+                    <button id="btn-compound" class="py-1.5 px-3 rounded-md text-sm font-bold transition-all duration-200 bg-slate-700 text-slate-400 hover:text-slate-200">Compound</button>
+                    <button id="btn-homo" class="py-1.5 px-3 rounded-md text-sm font-bold transition-all duration-200 bg-slate-700 text-slate-400 hover:text-slate-200">Homogeneous</button>
+                    <button id="btn-hetero" class="py-1.5 px-3 rounded-md text-sm font-bold transition-all duration-200 bg-slate-700 text-slate-400 hover:text-slate-200">Heterogeneous</button>
                 </div>
             </div>
 
-            <!-- METHOD 2: BACKUP ONE-CLICK EMOJI WAY -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden transition-all">
-                <div class="flex items-start justify-between gap-2 mb-3">
-                    <span class="bg-blue-500/10 text-blue-300 text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-500/30 flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt text-blue-400"></i>
-                        <span>METHOD 2 (BACKUP WAY)</span>
-                    </span>
-                    <span class="text-[11px] font-semibold bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full border border-slate-700">Emoji Formatted</span>
+            <!-- Zoom Slider -->
+            <div>
+                <div class="flex justify-between mb-1.5">
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Zoom</label>
+                    <span id="zoom-label" class="text-xs font-mono text-cyan-300">1.0x</span>
                 </div>
-
-                <h3 class="text-sm font-bold text-white mb-1">One-Click Backup Copy</h3>
-                <p class="text-xs text-slate-400 mb-3">Having trouble with keyboard shortcuts? Use this backup copy button!</p>
-
-                <!-- Feature Badge -->
-                <div class="mb-4 bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 text-xs text-amber-200 flex items-start gap-2">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm mt-0.5"></i>
-                    <span><strong>Note:</strong> Uses colored emojis (🟨 🟩 🟥 🟦) instead of background highlight bars.</span>
-                </div>
-
-                <!-- Big Action Button -->
-                <button id="copyBtn" onclick="copyNotesToClipboard()" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/20 transition duration-150 flex items-center justify-center gap-2.5 text-sm sm:text-base cursor-pointer border border-blue-400/30">
-                    <i class="fa-solid fa-paste text-lg"></i>
-                    <span>📋 Copy Emoji Notes to Clipboard</span>
-                </button>
-
-                <!-- Success Toast Message -->
-                <div id="copySuccessMsg" class="hidden mt-3 p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-medium flex items-start gap-2.5 animate-fadeIn">
-                    <i class="fa-solid fa-circle-check text-emerald-400 text-base mt-0.5"></i>
-                    <div>
-                        <span class="font-bold">✅ Notes Copied!</span>
-                        <p class="text-emerald-400/90 text-[11px] mt-0.5">Now click inside your Dynalist journal bullet and press <strong class="paste-key bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-600/40 font-mono text-white">Ctrl + V</strong></p>
-                    </div>
-                </div>
+                <input type="range" id="zoom-slider" min="1" max="40" step="0.1" value="1" class="w-full accent-cyan-500 cursor-pointer">
             </div>
 
-            <!-- INTERACTIVE PASTE TEST SANDBOX -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-                <div class="flex items-center justify-between mb-2">
-                    <label for="paste-tester" class="text-xs font-bold text-slate-200 flex items-center gap-2">
-                        <i class="fa-solid fa-vial-circle-check text-emerald-400 text-sm"></i>
-                        <span>🧪 Test Your Paste Here First</span>
-                    </label>
-                    <button onclick="clearTestSandbox()" class="text-[11px] text-slate-400 hover:text-slate-200 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Clear Box</button>
-                </div>
-                
-                <textarea id="paste-tester" rows="3" placeholder="Click here and press Paste (Ctrl+V or Cmd+V) to test what you copied..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-blue-500/50 resize-none transition"></textarea>
-                
-                <p id="test-feedback" class="text-[11px] text-slate-500 mt-1.5 italic">
-                    Paste above to test! If tabs or emojis show up, your paste will work in Dynalist.
-                </p>
+            <!-- Educational Info Box -->
+            <div id="info-box" class="bg-slate-900/80 p-3 rounded-lg border border-cyan-700/50 text-sm text-slate-300 shadow-inner min-h-[80px]">
+                <strong>Element (Pure):</strong> Made of only one type of atom. At the macro scale, it appears as a single, uniform substance.
             </div>
-
-        </section>
-
-        <!-- RIGHT PANEL: Live Document Preview (7 Cols) -->
-        <section class="lg:col-span-7 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden min-h-[550px] relative">
             
-            <!-- Header Bar -->
-            <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <!-- Legend overlay -->
+            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50 flex flex-col gap-1.5">
                 <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-                    <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
-                    <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-                    <span class="text-xs font-mono text-slate-400 ml-2 hidden sm:inline">Master Notes Document</span>
+                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                    <span class="text-xs font-semibold text-slate-300">Atom A (Cyan)</span>
                 </div>
-                
                 <div class="flex items-center gap-2">
-                    <button onclick="reloadIframe()" class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition" title="Reload Preview">
-                        <i class="fa-solid fa-rotate-right text-xs"></i>
-                    </button>
-                    <a href="https://dynalist.io/d/f1AWORn0Hx3YQTTonS9xmlgz" target="_blank" rel="noopener" class="text-xs font-semibold bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg border border-emerald-500/30 transition flex items-center gap-1.5">
-                        <span>Open Full Dynalist Document</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    </a>
+                    <div class="w-3 h-3 rounded-full bg-fuchsia-500"></div>
+                    <span class="text-xs font-semibold text-slate-300">Atom B (Magenta)</span>
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                    <div class="w-3 h-3 rounded-full bg-[#6f7ee1] shadow-[0_0_8px_rgba(111,126,225,0.5)]"></div>
+                    <span class="text-xs font-semibold text-slate-300">Macro Blended (Purple)</span>
                 </div>
             </div>
 
-            <!-- Method 1 Visual Indicator Banner -->
-            <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 border-b border-emerald-500/30 px-4 py-2.5 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2 text-xs text-emerald-300 font-semibold">
-                    <i class="fa-solid fa-hand-pointer text-amber-400 animate-bounce-x"></i>
-                    <span>Click inside this window for Method 1 (Ctrl+A ➔ Ctrl+C)</span>
-                </div>
-                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono border border-emerald-500/30">Live Workspace</span>
-            </div>
-
-            <!-- Frame Container -->
-            <div class="relative flex-1 w-full bg-slate-950 flex flex-col">
-                <iframe id="dynalist-frame" src="https://dynalist.io/d/f1AWORn0Hx3YQTTonS9xmlgz" class="w-full flex-1 border-0 min-h-[500px]" title="Classifying Matter Master Notes"></iframe>
-            </div>
-
-            <!-- Footer Bar -->
-            <div class="bg-slate-950 px-4 py-2 border-t border-slate-800 text-[11px] text-slate-500 flex justify-between items-center">
-                <span>Classifying Matter: Identification Flow Chart</span>
-                <span>8th Grade Physical Science</span>
-            </div>
-        </section>
-
+        </div>
+        
+        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-2">
+            <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Drag to pan, Scroll to zoom
+        </div>
     </main>
 
-    <!-- Hidden Notes Payload for Method 2 -->
-    <textarea id="hidden-notes-text" class="sr-only" aria-hidden="true">Classifying Matter: Identification Flow Chart
-	🟨 START: What are you looking at?
-		Molecular-scale diagram (atoms/molecules)
-		Macro-scale image (photograph/real sample)
-		Chemical formula or substance name
-	🟨 STEP 1: Is there only ONE type of atom present?
-		🟩 YES → ELEMENT (Pure Substance)
-			Made of only one kind of atom.
-			Atoms can be single (He, Fe) or bonded with the SAME element (O₂, N₂).
-			🛑 STOP.
-		🟥 NO → Continue to Step 2.
-	🟨 STEP 2: Are two or more DIFFERENT elements chemically bonded together in a fixed ratio?
-		🟩 YES → PURE COMPOUND (Pure Substance)
-			Every molecule/particle has the exact same combination of different atoms (e.g., H₂O, CO₂, NaCl).
-			🛑 STOP.
-		🟥 NO → Continue to Step 3.
-	🟨 STEP 3: Are there two or more different substances physically combined?
-		🟩 YES → MIXTURE (Continue to Step 4)
-		🟥 NO → Recheck Steps 1 & 2. All matter is either a pure substance or a mixture!
-	🟨 STEP 4: Is the mixture uniform (looks completely the same throughout)?
-		🟩 YES → HOMOGENEOUS MIXTURE (Continue to Step 5)
-		🟥 NO → HETEROGENEOUS MIXTURE (Continue to Step 5)
-	🟨 STEP 5: What type of mixture is it?
-		If Homogeneous: Do particles scatter light (Tyndall Effect)?
-			🟥 NO → Solution (e.g., Salt water, air, brass) 🛑 STOP.
-			🟩 YES → Colloid (e.g., Milk, fog, mayonnaise) 🛑 STOP.
-		If Heterogeneous: Do particles settle out over time or separate by filtering?
-			🟩 YES → Suspension (e.g., Muddy water, Italian dressing) 🛑 STOP.
-			🟥 NO → Mechanical Mixture (e.g., Trail mix, granite, salad) 🛑 STOP.
-
-🟦 Quick Summary Rules
-	🟣 Pure Substances = Elements & Compounds (Fixed composition, cannot be separated physically).
-	🟣 Mixtures = Solutions, Colloids, Suspensions, Mechanical Mixtures (Variable composition, separated physically).</textarea>
-
-    <!-- JavaScript Logic -->
     <script>
-        // OS Keyboard Shortcut Customization
-        document.addEventListener('DOMContentLoaded', function() {
-            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.includes("Macintosh");
-            const osBadge = document.getElementById('os-badge');
-            
-            const cmdKeys = document.querySelectorAll('.cmd-key');
-            const copyKeys = document.querySelectorAll('.copy-key');
-            const pasteKeys = document.querySelectorAll('.paste-key');
+        // --- Constants & Config ---
+        const GRID_SIZE = 300;
+        const COLOR_A = [6, 182, 212];   // Cyan
+        const COLOR_B = [217, 70, 239];  // Magenta
 
-            if (isMac) {
-                osBadge.textContent = "Mac Detected (Use Cmd ⌘)";
-                cmdKeys.forEach(el => el.textContent = "Cmd + A");
-                copyKeys.forEach(el => el.textContent = "Cmd + C");
-                pasteKeys.forEach(el => el.textContent = "Cmd + V");
-            } else {
-                osBadge.textContent = "Chromebook / Windows Detected";
-                cmdKeys.forEach(el => el.textContent = "Ctrl + A");
-                copyKeys.forEach(el => el.textContent = "Ctrl + C");
-                pasteKeys.forEach(el => el.textContent = "Ctrl + V");
+        const explanations = {
+            'element': "<strong>Element (Pure):</strong> Made of only one type of atom. At the macro scale, it appears as a single, uniform substance.",
+            'compound': "<strong>Compound (Pure):</strong> Two or more types of atoms chemically bonded (paired) in a repeating pattern. It also appears uniform at the macro scale.",
+            'homo': "<strong>Homogeneous Mixture:</strong> Different atoms are not bonded, but are mixed completely evenly. It looks uniform to the naked eye.",
+            'hetero': "<strong>Heterogeneous Mixture:</strong> Different atoms are not bonded and are clumped together. You can clearly see the different parts even when you zoom out."
+        };
+
+        // --- State Management ---
+        const state = {
+            type: 'element', 
+            zoom: 1, 
+            grid: new Uint8Array(GRID_SIZE * GRID_SIZE),
+            smoothedGrid: new Float32Array(GRID_SIZE * GRID_SIZE),
+            panX: GRID_SIZE / 2, // Center of grid
+            panY: GRID_SIZE / 2,
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+
+        // --- DOM Elements ---
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        const btnElement = document.getElementById('btn-element');
+        const btnCompound = document.getElementById('btn-compound');
+        const btnHomo = document.getElementById('btn-homo');
+        const btnHetero = document.getElementById('btn-hetero');
+        const slider = document.getElementById('zoom-slider');
+        const zoomLabel = document.getElementById('zoom-label');
+        const infoBox = document.getElementById('info-box');
+        
+        // Offscreen canvas for optimized zoomed-out rendering
+        const offscreenCanvas = document.createElement('canvas');
+        offscreenCanvas.width = GRID_SIZE;
+        offscreenCanvas.height = GRID_SIZE;
+        const offscreenCtx = offscreenCanvas.getContext('2d', { alpha: false });
+        const imgData = offscreenCtx.createImageData(GRID_SIZE, GRID_SIZE);
+
+        let lastBlendAmount = -1;
+        let forceUpdateImgData = true;
+
+        // --- Resizing ---
+        function resize() {
+            state.width = window.innerWidth;
+            state.height = window.innerHeight;
+            canvas.width = state.width;
+            canvas.height = state.height;
+            requestAnimationFrame(render);
+        }
+        window.addEventListener('resize', resize);
+
+        // --- Grid Generation ---
+        function generateGrid() {
+            if (state.type === 'element') {
+                for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+                    state.grid[i] = 0;
+                }
+            } else if (state.type === 'compound') {
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        state.grid[y * GRID_SIZE + x] = (x % 2 === 0) ? 0 : 1;
+                    }
+                }
+            } else if (state.type === 'homo') {
+                for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+                    state.grid[i] = Math.random() < 0.5 ? 0 : 1;
+                }
+            } else if (state.type === 'hetero') {
+                // Initial 50/50 noise
+                for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+                    state.grid[i] = Math.random() < 0.5 ? 0 : 1;
+                }
+                // Cellular Automaton for Heterogeneous clumps
+                let tempGrid = new Uint8Array(GRID_SIZE * GRID_SIZE);
+                for (let pass = 0; pass < 5; pass++) {
+                    for (let y = 0; y < GRID_SIZE; y++) {
+                        for (let x = 0; x < GRID_SIZE; x++) {
+                            let sum = 0;
+                            let count = 0;
+                            for (let dy = -2; dy <= 2; dy++) {
+                                for (let dx = -2; dx <= 2; dx++) {
+                                    let nx = x + dx;
+                                    let ny = y + dy;
+                                    if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+                                        sum += state.grid[ny * GRID_SIZE + nx];
+                                        count++;
+                                    }
+                                }
+                            }
+                            tempGrid[y * GRID_SIZE + x] = (sum / count) > 0.5 ? 1 : 0;
+                        }
+                    }
+                    state.grid.set(tempGrid);
+                }
             }
 
-            // Interactive Tester Logic
-            const testArea = document.getElementById('paste-tester');
-            testArea.addEventListener('input', function() {
-                const feedback = document.getElementById('test-feedback');
-                const text = this.value;
+            computeSmoothedGrid();
+            forceUpdateImgData = true;
+            render();
+        }
 
-                if (text.trim().length > 0) {
-                    if (text.includes('🟨') || text.includes('🟩')) {
-                        feedback.textContent = "🎉 Great! Method 2 Emoji notes detected with tab formatting. Now paste into your Dynalist journal!";
-                        feedback.className = "text-[11px] text-blue-400 font-semibold mt-1.5";
-                    } else if (text.includes('STEP 1') || text.includes('Classifying Matter')) {
-                        feedback.textContent = "⭐ Awesome! Method 1 Native notes detected! They will paste into Dynalist with full color highlights!";
-                        feedback.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
-                    } else {
-                        feedback.textContent = "Text detected! You can now paste this into your Dynalist Science Journal.";
-                        feedback.className = "text-[11px] text-slate-300 font-medium mt-1.5";
+        // --- Optical Blending Math (Separable Box Blur) ---
+        function computeSmoothedGrid() {
+            const R = 12; // Blur radius
+            let temp = new Float32Array(GRID_SIZE * GRID_SIZE);
+            let current = new Float32Array(state.grid);
+            
+            // 2-Pass Box Blur for smooth heterogeneous edges
+            for (let pass = 0; pass < 2; pass++) {
+                // Horizontal pass
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        let sum = 0;
+                        let count = 0;
+                        for (let dx = -R; dx <= R; dx++) {
+                            let nx = x + dx;
+                            if (nx >= 0 && nx < GRID_SIZE) {
+                                sum += current[y * GRID_SIZE + nx];
+                                count++;
+                            }
+                        }
+                        temp[y * GRID_SIZE + x] = sum / count;
                     }
-                } else {
-                    feedback.textContent = "Paste above to test! If tabs or emojis show up, your paste will work in Dynalist.";
-                    feedback.className = "text-[11px] text-slate-500 mt-1.5 italic";
                 }
-            });
+                
+                // Vertical pass
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        let sum = 0;
+                        let count = 0;
+                        for (let dy = -R; dy <= R; dy++) {
+                            let ny = y + dy;
+                            if (ny >= 0 && ny < GRID_SIZE) {
+                                sum += temp[ny * GRID_SIZE + x];
+                                count++;
+                            }
+                        }
+                        current[y * GRID_SIZE + x] = sum / count;
+                    }
+                }
+            }
+
+            // Finalize values
+            for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+                if (state.type === 'element') {
+                    state.smoothedGrid[i] = 0; 
+                } else if (state.type === 'homo' || state.type === 'compound') {
+                    // REQUIREMENT: Must render as perfectly solid macro.
+                    state.smoothedGrid[i] = 0.5; 
+                } else {
+                    // Heterogeneous keeps the beautifully blurred clumps
+                    state.smoothedGrid[i] = current[i]; 
+                }
+            }
+        }
+
+        // --- Rendering ---
+        function updateImageData(blendAmount) {
+            const data = imgData.data;
+            for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+                const baseVal = state.grid[i];
+                const smoothVal = state.smoothedGrid[i];
+                // Interpolate between discrete value and smoothed value based on zoom
+                const val = baseVal + (smoothVal - baseVal) * blendAmount;
+
+                // Color mix: Cyan (0) to Magenta (1)
+                const r = COLOR_A[0] + (COLOR_B[0] - COLOR_A[0]) * val;
+                const g = COLOR_A[1] + (COLOR_B[1] - COLOR_A[1]) * val;
+                const b = COLOR_A[2] + (COLOR_B[2] - COLOR_A[2]) * val;
+
+                const idx = i * 4;
+                data[idx] = r;
+                data[idx+1] = g;
+                data[idx+2] = b;
+                data[idx+3] = 255;
+            }
+            offscreenCtx.putImageData(imgData, 0, 0);
+            lastBlendAmount = blendAmount;
+            forceUpdateImgData = false;
+        }
+
+        function render() {
+            ctx.fillStyle = '#020617'; // slate-950 background
+            ctx.fillRect(0, 0, state.width, state.height);
+
+            const baseScale = Math.min(state.width, state.height) * 0.9 / GRID_SIZE;
+            const cellSize = baseScale * state.zoom;
+            
+            const cx = state.width / 2;
+            const cy = state.height / 2;
+
+            // Combine zoom level to determine blending.
+            // zoom <= 3 is 1.0 (fully blended), zoom >= 10 is 0.0
+            let blendAmount = Math.max(0, Math.min(1, 1 - (state.zoom - 3) / 7));
+            
+            if (forceUpdateImgData || Math.abs(blendAmount - lastBlendAmount) > 0.005) {
+                updateImageData(blendAmount);
+            }
+
+            const drawW = GRID_SIZE * cellSize;
+            const drawH = GRID_SIZE * cellSize;
+            const drawX = cx - state.panX * cellSize;
+            const drawY = cy - state.panY * cellSize;
+
+            // 1. Draw the continuous macroscopic field
+            ctx.imageSmoothingEnabled = false; 
+            ctx.globalAlpha = blendAmount;
+            if (blendAmount > 0) {
+                ctx.drawImage(offscreenCanvas, drawX, drawY, drawW, drawH);
+            }
+
+            // 2. Draw distinct microscopic atoms
+            if (blendAmount < 1.0 && state.zoom >= 2) {
+                ctx.globalAlpha = 1.0 - blendAmount; 
+                
+                const cellsOnScreenX = state.width / cellSize;
+                const cellsOnScreenY = state.height / cellSize;
+
+                const startX = Math.max(0, Math.floor(state.panX - cellsOnScreenX / 2));
+                const endX = Math.min(GRID_SIZE, Math.ceil(state.panX + cellsOnScreenX / 2));
+                const startY = Math.max(0, Math.floor(state.panY - cellsOnScreenY / 2));
+                const endY = Math.min(GRID_SIZE, Math.ceil(state.panY + cellsOnScreenY / 2));
+
+                const radius = (cellSize / 2) * 0.85; 
+                
+                ctx.fillStyle = `rgb(${COLOR_A.join(',')})`;
+                ctx.beginPath();
+                for (let y = startY; y < endY; y++) {
+                    for (let x = startX; x < endX; x++) {
+                        if (state.grid[y * GRID_SIZE + x] === 0) {
+                            let px = cx + (x - state.panX) * cellSize + cellSize/2;
+                            let py = cy + (y - state.panY) * cellSize + cellSize/2;
+                            if (state.type === 'compound') px += radius * 0.4; // Shift right to pair up
+                            ctx.moveTo(px + radius, py);
+                            ctx.arc(px, py, radius, 0, Math.PI * 2);
+                        }
+                    }
+                }
+                ctx.fill();
+
+                ctx.fillStyle = `rgb(${COLOR_B.join(',')})`;
+                ctx.beginPath();
+                for (let y = startY; y < endY; y++) {
+                    for (let x = startX; x < endX; x++) {
+                        if (state.grid[y * GRID_SIZE + x] === 1) {
+                            let px = cx + (x - state.panX) * cellSize + cellSize/2;
+                            let py = cy + (y - state.panY) * cellSize + cellSize/2;
+                            if (state.type === 'compound') px -= radius * 0.4; // Shift left to pair up
+                            ctx.moveTo(px + radius, py);
+                            ctx.arc(px, py, radius, 0, Math.PI * 2);
+                        }
+                    }
+                }
+                ctx.fill();
+            }
+            
+            ctx.globalAlpha = 1.0; // Reset alpha
+        }
+
+        // --- Interaction & Events ---
+        let isDragging = false;
+        let lastMouseX, lastMouseY;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
         });
 
-        // Copy Method 2 (Fallback execCommand support for iFrame environments)
-        function copyNotesToClipboard() {
-            const textToCopy = document.getElementById('hidden-notes-text').value;
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            
+            const baseScale = Math.min(state.width, state.height) * 0.9 / GRID_SIZE;
+            const cellSize = baseScale * state.zoom;
 
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    handleCopySuccess();
-                }).catch(() => {
-                    fallbackCopyExecCommand(textToCopy);
-                });
-            } else {
-                fallbackCopyExecCommand(textToCopy);
+            // Update pan in grid units
+            state.panX -= dx / cellSize;
+            state.panY -= dy / cellSize;
+            
+            // Constrain
+            state.panX = Math.max(0, Math.min(GRID_SIZE, state.panX));
+            state.panY = Math.max(0, Math.min(GRID_SIZE, state.panY));
+
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            requestAnimationFrame(render);
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mouseleave', () => isDragging = false);
+
+        // Zoom to Cursor
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const oldZoom = state.zoom;
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            let newZoom = Math.max(1, Math.min(40, state.zoom * zoomFactor));
+            
+            if (newZoom !== oldZoom) {
+                // Calculate cursor position in grid units
+                const baseScale = Math.min(state.width, state.height) * 0.9 / GRID_SIZE;
+                const oldCellSize = baseScale * oldZoom;
+                
+                const cursorGridX = state.panX + (e.clientX - state.width / 2) / oldCellSize;
+                const cursorGridY = state.panY + (e.clientY - state.height / 2) / oldCellSize;
+
+                state.zoom = newZoom;
+                slider.value = state.zoom;
+                zoomLabel.textContent = state.zoom.toFixed(1) + 'x';
+                
+                // Adjust pan to zoom towards cursor
+                const newCellSize = baseScale * state.zoom;
+                state.panX = cursorGridX - (e.clientX - state.width / 2) / newCellSize;
+                state.panY = cursorGridY - (e.clientY - state.height / 2) / newCellSize;
+                
+                state.panX = Math.max(0, Math.min(GRID_SIZE, state.panX));
+                state.panY = Math.max(0, Math.min(GRID_SIZE, state.panY));
+
+                requestAnimationFrame(render);
             }
-        }
+        }, { passive: false });
 
-        function fallbackCopyExecCommand(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.top = "0";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
+        slider.addEventListener('input', (e) => {
+            state.zoom = parseFloat(e.target.value);
+            zoomLabel.textContent = state.zoom.toFixed(1) + 'x';
+            requestAnimationFrame(render);
+        });
 
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    handleCopySuccess();
+        // Helper to update buttons
+        function updateButtons(activeId) {
+            const btns = {
+                'btn-element': btnElement,
+                'btn-compound': btnCompound,
+                'btn-homo': btnHomo,
+                'btn-hetero': btnHetero
+            };
+            for (let id in btns) {
+                if (id === activeId) {
+                    btns[id].className = "py-1.5 px-3 rounded-md text-sm font-bold transition-all duration-200 bg-cyan-600/90 text-white shadow";
                 } else {
-                    showManualAlert();
+                    btns[id].className = "py-1.5 px-3 rounded-md text-sm font-bold transition-all duration-200 bg-slate-700 text-slate-400 hover:text-slate-200";
                 }
-            } catch (err) {
-                showManualAlert();
             }
-
-            document.body.removeChild(textArea);
         }
 
-        function handleCopySuccess() {
-            const msg = document.getElementById('copySuccessMsg');
-            const btn = document.getElementById('copyBtn');
+        btnElement.addEventListener('click', () => {
+            state.type = 'element';
+            infoBox.innerHTML = explanations['element'];
+            updateButtons('btn-element');
+            generateGrid();
+        });
 
-            msg.classList.remove('hidden');
+        btnCompound.addEventListener('click', () => {
+            state.type = 'compound';
+            infoBox.innerHTML = explanations['compound'];
+            updateButtons('btn-compound');
+            generateGrid();
+        });
 
-            btn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
-            btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
-            btn.innerHTML = '<i class="fa-solid fa-check text-lg"></i><span>Copied to Clipboard!</span>';
+        btnHomo.addEventListener('click', () => {
+            state.type = 'homo';
+            infoBox.innerHTML = explanations['homo'];
+            updateButtons('btn-homo');
+            generateGrid();
+        });
 
-            playChime();
+        btnHetero.addEventListener('click', () => {
+            state.type = 'hetero';
+            infoBox.innerHTML = explanations['hetero'];
+            updateButtons('btn-hetero');
+            generateGrid();
+        });
 
-            setTimeout(() => {
-                btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
-                btn.classList.add('bg-blue-600', 'hover:bg-blue-500');
-                btn.innerHTML = '<i class="fa-solid fa-paste text-lg"></i><span>📋 Copy Emoji Notes to Clipboard</span>';
-            }, 4000);
-        }
-
-        function showManualAlert() {
-            const hiddenText = document.getElementById('hidden-notes-text');
-            hiddenText.classList.remove('sr-only');
-            hiddenText.classList.add('w-full', 'h-28', 'p-2', 'bg-slate-900', 'text-xs', 'mt-2', 'rounded', 'font-mono');
-            hiddenText.select();
-            alert("Copy restricted. The notes are highlighted below—press Ctrl+C / Cmd+C to copy manually!");
-        }
-
-        function playChime() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                const now = ctx.currentTime;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, now);
-                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
-                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
-                
-                gain.gain.setValueAtTime(0.06, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-                
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                
-                osc.start(now);
-                osc.stop(now + 0.35);
-            } catch (e) {}
-        }
-
-        function clearTestSandbox() {
-            const textarea = document.getElementById('paste-tester');
-            textarea.value = '';
-            document.getElementById('test-feedback').textContent = "Paste above to test! If tabs or emojis show up, your paste will work in Dynalist.";
-            document.getElementById('test-feedback').className = "text-[11px] text-slate-500 mt-1.5 italic";
-        }
-
-        function reloadIframe() {
-            const frame = document.getElementById('dynalist-frame');
-            frame.src = frame.src;
-        }
+        // --- Init ---
+        resize();
+        generateGrid();
     </script>
 </body>
 </html>
